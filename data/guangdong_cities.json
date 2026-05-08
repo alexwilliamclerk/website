@@ -1,0 +1,23 @@
+[
+  {"name": "广州", "slug": "guangzhou"},
+  {"name": "深圳", "slug": "shenzhen"},
+  {"name": "珠海", "slug": "zhuhai"},
+  {"name": "汕头", "slug": "shantou"},
+  {"name": "佛山", "slug": "foshan"},
+  {"name": "韶关", "slug": "shaoguan"},
+  {"name": "湛江", "slug": "zhanjiang"},
+  {"name": "肇庆", "slug": "zhaoqing"},
+  {"name": "江门", "slug": "jiangmen"},
+  {"name": "茂名", "slug": "maoming"},
+  {"name": "惠州", "slug": "huizhou"},
+  {"name": "梅州", "slug": "meizhou"},
+  {"name": "汕尾", "slug": "shanwei"},
+  {"name": "河源", "slug": "heyuan"},
+  {"name": "阳江", "slug": "yangjiang"},
+  {"name": "清远", "slug": "qingyuan"},
+  {"name": "东莞", "slug": "dongguan"},
+  {"name": "中山", "slug": "zhongshan"},
+  {"name": "潮州", "slug": "chaozhou"},
+  {"name": "揭阳", "slug": "jieyang"},
+  {"name": "云浮", "slug": "yunfu"}
+]
