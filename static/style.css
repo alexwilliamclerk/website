@@ -1,0 +1,44 @@
+:root {
+  --bg: #0a0a0f;
+  --bg2: #0d1117;
+  --glass: rgba(255, 255, 255, 0.04);
+  --line: rgba(255, 255, 255, 0.08);
+  --text: rgba(255, 255, 255, 0.92);
+  --sub: rgba(255, 255, 255, 0.55);
+  --accent: #4fc3f7;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, "Helvetica Neue", "SF Pro Display", sans-serif;
+  background: linear-gradient(120deg, var(--bg2), var(--bg));
+  color: var(--text);
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 24px; display: grid; gap: 16px; }
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.2);
+}
+.topbar { display: flex; justify-content: space-between; align-items: center; }
+.grid-two { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; }
+.temp-big { font-size: 110px; font-weight: 200; font-variant-numeric: tabular-nums; }
+.unit { font-size: 24px; vertical-align: super; }
+.secondary { color: var(--sub); }
+.matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.matrix label { display:block; font-size:11px; letter-spacing:.08em; color:var(--sub); }
+.matrix strong { font-size:22px; }
+.city-row { display: flex; justify-content: space-between; align-items: center; }
+select, button { background:#111827; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
+button:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.14); }
+.row-between { display:flex; justify-content: space-between; align-items:center; }
+.city-cards { display:grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap:8px; }
+.city-card { padding:12px; border-radius:16px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); }
+.history { display:grid; gap:8px; }
+.hist-item { display:flex; justify-content:space-between; font-variant-numeric: tabular-nums; color:var(--sub); }
+.reveal { opacity:0; transform: translateY(16px); animation: reveal .55s cubic-bezier(0.25,0.46,0.45,0.94) forwards; animation-delay: var(--delay); }
+@keyframes reveal { to { opacity:1; transform: translateY(0); } }
+@media (max-width:900px){ .grid-two { grid-template-columns: 1fr; } .temp-big { font-size: 72px; } }
