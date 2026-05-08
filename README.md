@@ -63,8 +63,9 @@ pip install -U pip
 pip install -r requirements.txt
 ```
 
-> 注意：文件名是 `requirements.txt`（复数），不是 `requirements.txt` 以外的拼写。  
-> 你截图里执行的是 `pip install -I requirements.txt`，会报 `No such file or directory`。
+> 注意 1：安装依赖要用 `-r`（requirements file），不是 `-i`。  
+> 注意 2：文件名必须精确是 `requirements.txt`，常见错写是 `reqiurements.txt`（字母顺序错）。  
+> 你截图里这两种问题都出现过，都会导致 `No such file or directory`。
 
 ### 4) 本地先跑通（先验证）
 
@@ -205,7 +206,7 @@ pwd
 ls -lah
 ```
 
-确认你在 `/opt/weather-site` 目录，且文件名是 `requirements.txt`，然后重试：
+确认你在 `/opt/weather-site` 目录，且文件名是 `requirements.txt`，然后重试（注意是 `-r`）：
 
 ```bash
 pip install -r requirements.txt
