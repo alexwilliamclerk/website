@@ -224,6 +224,26 @@ pip install -r requirements.txt
 bash scripts/install_deps.sh
 ```
 
+### 5) `bash: scripts/install_deps.sh: No such file or directory`
+
+这说明你服务器上的代码还没更新到最新版本（旧版本没有 `scripts/` 目录）。执行：
+
+```bash
+cd /opt/weather-site
+git pull
+ls -lah scripts
+bash scripts/install_deps.sh
+```
+
+如果 `git pull` 提示不是 git 仓库，说明你当前目录不是项目目录，请先重新 clone：
+
+```bash
+cd /opt
+git clone https://github.com/alexwilliamclerk/website.git weather-site
+cd /opt/weather-site
+bash scripts/install_deps.sh
+```
+
 ---
 
 ## 项目结构
