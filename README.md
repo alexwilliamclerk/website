@@ -63,6 +63,9 @@ pip install -U pip
 pip install -r requirements.txt
 ```
 
+> 注意：文件名是 `requirements.txt`（复数），不是 `requirements.txt` 以外的拼写。  
+> 你截图里执行的是 `pip install -I requirements.txt`，会报 `No such file or directory`。
+
 ### 4) 本地先跑通（先验证）
 
 ```bash
@@ -193,6 +196,21 @@ nginx -t
 journalctl -u nginx -n 100 --no-pager
 ```
 
+### 4) `ERROR: Could not open requirements file`
+
+最常见是文件名写错或当前目录不对。先执行：
+
+```bash
+pwd
+ls -lah
+```
+
+确认你在 `/opt/weather-site` 目录，且文件名是 `requirements.txt`，然后重试：
+
+```bash
+pip install -r requirements.txt
+```
+
 ---
 
 ## 项目结构
@@ -213,4 +231,3 @@ static/app.js
 - 采集目标来源：墨迹天气页面（`tianqi.moji.com`）
 - 数据库存储：SQLite（默认在项目目录生成）
 - 保留策略：仅保留近 14 天
-
