@@ -309,7 +309,9 @@ h3 {
 
 .matrix strong {
   color: #1f2937;
-  font-size: 24px;
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .matrix > div {

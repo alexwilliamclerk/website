@@ -1,7 +1,8 @@
 # 广东城市天气采集网站（墨迹天气）
 
 这是一个 Flask 小网站：
-- 自动抓取广东 21 个地级市的天气（最高温 / 最低温）
+- 自动抓取广东 21 个地级市的天气（最高温 / 最低温 / AQI / 湿度 / 风速 / 紫外线 / 能见度 / 气压）
+- Gunicorn 启动后内置定时任务：每天 London 时间 00:00 自动爬取一次
 - 保存近 14 天数据（SQLite）
 - 提供网页看板与 API
 
@@ -118,6 +119,8 @@ systemctl daemon-reload
 systemctl enable --now weather-site
 systemctl status weather-site --no-pager
 ```
+
+服务启动后会自动注册 APScheduler 定时任务，每天 `Europe/London` 时间 00:00 执行 `/api/crawl` 对应的爬取逻辑。Gunicorn 多 worker 时，应用会用本地锁文件避免多个 worker 重复调度。
 
 ### 6) 配置 Nginx 反向代理
 

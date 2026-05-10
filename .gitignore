@@ -2,5 +2,6 @@
 __pycache__/
 *.pyc
 weather.db
+.weather_scheduler.lock
 *.log
 .env

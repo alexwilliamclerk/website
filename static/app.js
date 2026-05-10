@@ -6,11 +6,18 @@ const tempHigh = document.getElementById('tempHigh');
 const tempLow = document.getElementById('tempLow');
 const historyBox = document.getElementById('history');
 const refreshBtn = document.getElementById('refreshBtn');
+const metricAqi = document.getElementById('metricAqi');
+const metricHumidity = document.getElementById('metricHumidity');
+const metricWindSpeed = document.getElementById('metricWindSpeed');
+const metricUvIndex = document.getElementById('metricUvIndex');
+const metricVisibility = document.getElementById('metricVisibility');
+const metricPressure = document.getElementById('metricPressure');
 const panels = [...document.querySelectorAll('.snap-panel')];
 const dots = [...document.querySelectorAll('.dot')];
 
 let activePanelIndex = 0;
 let wheelLocked = false;
+let latestByCity = new Map();
 
 function tick() { nowTime.textContent = new Date().toLocaleString('zh-CN', { hour12: false }); }
 setInterval(tick, 1000); tick();
@@ -20,6 +27,7 @@ async function loadLatest() {
   const data = await res.json();
   cityCards.innerHTML = '';
   citySelect.innerHTML = '';
+  latestByCity = new Map(data.map(d => [d.city, d]));
   data.forEach((d, i) => {
     const opt = document.createElement('option');
     opt.value = d.city; opt.textContent = d.city; citySelect.appendChild(opt);
@@ -27,12 +35,10 @@ async function loadLatest() {
     card.className = 'city-card';
     card.style.setProperty('--card-delay', `${Math.min(i * 18, 360)}ms`);
     card.dataset.city = d.city;
-    card.dataset.high = d.high_temp;
-    card.dataset.low = d.low_temp;
     card.innerHTML = `<div>${d.city}</div><strong>${d.high_temp}° / ${d.low_temp}°</strong>`;
-    card.addEventListener('click', () => selectCity(d.city, d.high_temp, d.low_temp));
+    card.addEventListener('click', () => selectCity(d));
     cityCards.appendChild(card);
-    if (i === 0) updateMain(d.city, d.high_temp, d.low_temp);
+    if (i === 0) updateMain(d);
   });
   syncSelectedCard(citySelect.value);
 }
@@ -48,11 +54,25 @@ async function loadCityHistory(city) {
   `).join('');
 }
 
-function updateMain(city, high, low) {
-  cityName.textContent = city;
-  animateNumber(tempHigh, Number(high));
-  tempLow.textContent = low;
-  syncSelectedCard(city);
+function metricValue(value) {
+  return value === null || value === undefined || value === '' ? '--' : value;
+}
+
+function renderMetrics(record = {}) {
+  metricAqi.textContent = metricValue(record.aqi);
+  metricHumidity.textContent = metricValue(record.humidity);
+  metricWindSpeed.textContent = metricValue(record.wind_speed);
+  metricUvIndex.textContent = metricValue(record.uv_index);
+  metricVisibility.textContent = metricValue(record.visibility);
+  metricPressure.textContent = metricValue(record.pressure);
+}
+
+function updateMain(record) {
+  cityName.textContent = record.city;
+  animateNumber(tempHigh, Number(record.high_temp));
+  tempLow.textContent = record.low_temp;
+  renderMetrics(record);
+  syncSelectedCard(record.city);
 }
 
 function animateNumber(el, nextValue) {
@@ -76,10 +96,10 @@ function animateNumber(el, nextValue) {
   requestAnimationFrame(frame);
 }
 
-async function selectCity(city, high, low) {
-  citySelect.value = city;
-  updateMain(city, high, low);
-  await loadCityHistory(city);
+async function selectCity(record) {
+  citySelect.value = record.city;
+  updateMain(record);
+  await loadCityHistory(record.city);
   snapToPanel(1);
 }
 
@@ -91,9 +111,9 @@ function syncSelectedCard(city) {
 
 citySelect.addEventListener('change', async (e) => {
   const city = e.target.value;
-  const card = [...cityCards.children].find(c => c.dataset.city === city);
-  if (card) {
-    updateMain(city, card.dataset.high, card.dataset.low);
+  const record = latestByCity.get(city);
+  if (record) {
+    updateMain(record);
   }
   await loadCityHistory(city);
 });
@@ -101,11 +121,14 @@ citySelect.addEventListener('change', async (e) => {
 refreshBtn.addEventListener('click', async () => {
   refreshBtn.disabled = true;
   refreshBtn.textContent = '爬取中...';
-  await fetch('/api/crawl', { method: 'POST' });
-  await loadLatest();
-  await loadCityHistory(citySelect.value || '广州');
-  refreshBtn.disabled = false;
-  refreshBtn.textContent = '立即爬取';
+  try {
+    await fetch('/api/crawl', { method: 'POST' });
+    await loadLatest();
+    await loadCityHistory(citySelect.value || '广州');
+  } finally {
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = '立即爬取';
+  }
 });
 
 function setActivePanel(index) {
