@@ -280,14 +280,20 @@ h3 {
   color: #1f2937;
   font-size: clamp(18px, 2vw, 23px);
   line-height: 1.25;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .matrix > div {
+  min-width: 0;
   padding: 12px;
   border-radius: 14px;
   background: #f7fbff;
   border: 1px solid #e3edf6;
+}
+
+#metricWindSpeed {
+  font-size: clamp(14px, 1.45vw, 21px);
 }
 
 .city-row {
