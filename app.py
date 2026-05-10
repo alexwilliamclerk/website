@@ -267,7 +267,7 @@ def save_weather(city: str, date: str, weather: dict) -> None:
                 clean_metric(weather.get("uv_index")),
                 clean_metric(weather.get("visibility")),
                 clean_metric(weather.get("pressure")),
-                dt.datetime.now(dt.UTC).isoformat(),
+                dt.datetime.now(dt.timezone.utc).isoformat(),
             ),
         )
 
