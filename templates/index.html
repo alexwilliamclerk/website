@@ -8,14 +8,9 @@
   </head>
   <body>
     <div class="bg-noise"></div>
-    <nav id="pageDots" class="page-dots" aria-label="页面导航">
-      <button class="dot active" type="button" aria-label="总览" data-target="overview"></button>
-      <button class="dot" type="button" aria-label="记录" data-target="historyPanel"></button>
-      <button class="dot" type="button" aria-label="城市" data-target="cityPanel"></button>
-    </nav>
 
     <main class="container">
-      <section id="overview" class="snap-panel overview-panel">
+      <section id="overview" class="flow-section overview-panel">
         <header class="topbar glass reveal" style="--delay: 0ms">
           <div>
             <p class="eyebrow">Guangdong Weather</p>
@@ -51,7 +46,7 @@
         </div>
       </section>
 
-      <section id="historyPanel" class="snap-panel">
+      <section id="historyPanel" class="flow-section">
         <article class="glass reveal panel-fill" style="--delay: 120ms">
           <div class="section-heading">
             <p class="eyebrow">Trend</p>
@@ -61,7 +56,7 @@
         </article>
       </section>
 
-      <section id="cityPanel" class="snap-panel">
+      <section id="cityPanel" class="flow-section">
         <article class="glass reveal panel-fill" style="--delay: 160ms">
           <div class="row-between">
             <div class="section-heading">

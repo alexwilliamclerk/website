@@ -12,12 +12,67 @@ const metricWindSpeed = document.getElementById('metricWindSpeed');
 const metricUvIndex = document.getElementById('metricUvIndex');
 const metricVisibility = document.getElementById('metricVisibility');
 const metricPressure = document.getElementById('metricPressure');
-const panels = [...document.querySelectorAll('.snap-panel')];
-const dots = [...document.querySelectorAll('.dot')];
+const historyPanel = document.getElementById('historyPanel');
 
-let activePanelIndex = 0;
-let wheelLocked = false;
 let latestByCity = new Map();
+let pointerFrame = 0;
+
+const motionObserver = 'IntersectionObserver' in window
+  ? new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('in-view');
+      motionObserver.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.16 })
+  : null;
+
+function observeMotionElements(root = document) {
+  const targets = root instanceof Element
+    ? [root, ...root.querySelectorAll('.reveal, .city-card, .hist-item')]
+    : [...root.querySelectorAll('.reveal, .city-card, .hist-item')];
+
+  targets
+    .filter(el => el.matches('.reveal, .city-card, .hist-item'))
+    .forEach((el) => {
+      if (motionObserver) {
+        motionObserver.observe(el);
+      } else {
+        el.classList.add('in-view');
+      }
+    });
+}
+
+function updateScrollEffects() {
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
+  document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
+  document.documentElement.style.setProperty('--scroll-shift-y', `${progress * -26}px`);
+}
+
+function updatePointerEffects(event) {
+  if (pointerFrame) return;
+
+  pointerFrame = requestAnimationFrame(() => {
+    const x = (event.clientX / window.innerWidth - 0.5) * 2;
+    const y = (event.clientY / window.innerHeight - 0.5) * 2;
+    document.documentElement.style.setProperty('--pointer-x', x.toFixed(3));
+    document.documentElement.style.setProperty('--pointer-y', y.toFixed(3));
+    document.documentElement.style.setProperty('--noise-x', `${x * -10}px`);
+    document.documentElement.style.setProperty('--noise-y', `${y * -8}px`);
+    pointerFrame = 0;
+  });
+}
+
+function easeHistoryIntoView() {
+  if (!historyPanel) return;
+  const rect = historyPanel.getBoundingClientRect();
+  const comfortableTop = window.innerHeight * 0.18;
+  const comfortableBottom = window.innerHeight * 0.82;
+  if (rect.top < comfortableTop || rect.top > comfortableBottom) {
+    historyPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
 
 function tick() { nowTime.textContent = new Date().toLocaleString('zh-CN', { hour12: false }); }
 setInterval(tick, 1000); tick();
@@ -36,11 +91,12 @@ async function loadLatest() {
     card.style.setProperty('--card-delay', `${Math.min(i * 18, 360)}ms`);
     card.dataset.city = d.city;
     card.innerHTML = `<div>${d.city}</div><strong>${d.high_temp}° / ${d.low_temp}°</strong>`;
-    card.addEventListener('click', () => selectCity(d));
+    card.addEventListener('click', () => selectCity(d, true));
     cityCards.appendChild(card);
     if (i === 0) updateMain(d);
   });
   syncSelectedCard(citySelect.value);
+  observeMotionElements(cityCards);
 }
 
 async function loadCityHistory(city) {
@@ -52,6 +108,7 @@ async function loadCityHistory(city) {
       <span>${d.high_temp}° / ${d.low_temp}°</span>
     </div>
   `).join('');
+  observeMotionElements(historyBox);
 }
 
 function metricValue(value) {
@@ -96,11 +153,11 @@ function animateNumber(el, nextValue) {
   requestAnimationFrame(frame);
 }
 
-async function selectCity(record) {
+async function selectCity(record, shouldScroll = false) {
   citySelect.value = record.city;
   updateMain(record);
   await loadCityHistory(record.city);
-  snapToPanel(1);
+  if (shouldScroll) easeHistoryIntoView();
 }
 
 function syncSelectedCard(city) {
@@ -131,59 +188,12 @@ refreshBtn.addEventListener('click', async () => {
   }
 });
 
-function setActivePanel(index) {
-  activePanelIndex = index;
-  panels.forEach((panel, i) => panel.classList.toggle('active', i === index));
-  dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-}
-
-function snapToPanel(index) {
-  const targetIndex = Math.max(0, Math.min(index, panels.length - 1));
-  panels[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setActivePanel(targetIndex);
-}
-
-function canScrollInside(el, deltaY) {
-  const scrollBox = el.closest('.history, .city-cards');
-  if (!scrollBox) return false;
-
-  const hasOverflow = scrollBox.scrollHeight > scrollBox.clientHeight + 2;
-  if (!hasOverflow) return false;
-
-  const atTop = scrollBox.scrollTop <= 0;
-  const atBottom = scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight - 2;
-  return (deltaY < 0 && !atTop) || (deltaY > 0 && !atBottom);
-}
-
-dots.forEach((dot, index) => {
-  dot.addEventListener('click', () => snapToPanel(index));
-});
-
-const panelObserver = new IntersectionObserver((entries) => {
-  const visible = entries
-    .filter(entry => entry.isIntersecting)
-    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-  if (!visible) return;
-  const index = panels.indexOf(visible.target);
-  if (index >= 0) setActivePanel(index);
-}, { threshold: [0.45, 0.7] });
-
-panels.forEach(panel => panelObserver.observe(panel));
-
-window.addEventListener('wheel', (event) => {
-  if (window.matchMedia('(max-width: 900px)').matches) return;
-  if (canScrollInside(event.target, event.deltaY)) return;
-  if (Math.abs(event.deltaY) < 18 || wheelLocked) return;
-
-  event.preventDefault();
-  wheelLocked = true;
-  snapToPanel(activePanelIndex + Math.sign(event.deltaY));
-  window.setTimeout(() => { wheelLocked = false; }, 760);
-}, { passive: false });
+window.addEventListener('scroll', updateScrollEffects, { passive: true });
+window.addEventListener('pointermove', updatePointerEffects, { passive: true });
 
 (async function init() {
-  setActivePanel(0);
+  observeMotionElements();
+  updateScrollEffects();
   await loadLatest();
   if (citySelect.value) await loadCityHistory(citySelect.value);
 })();
