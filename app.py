@@ -149,6 +149,10 @@ def format_float(value, digits: int = 1) -> str | None:
     return f"{float(value):.{digits}f}"
 
 
+def compact_wind_speed(value) -> str:
+    return re.sub(r"\s+", "", str(value))
+
+
 def fetch_open_meteo_metrics(city: dict, session: requests.Session) -> dict:
     latitude = city.get("latitude")
     longitude = city.get("longitude")
@@ -198,7 +202,7 @@ def fetch_open_meteo_metrics(city: dict, session: requests.Session) -> dict:
     if current.get("relative_humidity_2m") is not None:
         metrics["humidity"] = f"{round(float(current['relative_humidity_2m']))}%"
     if current.get("wind_speed_10m") is not None:
-        metrics["wind_speed"] = f"{format_float(current['wind_speed_10m'])} km/h"
+        metrics["wind_speed"] = f"{format_float(current['wind_speed_10m'])}km/h"
     if current.get("uv_index") is not None:
         metrics["uv_index"] = format_float(current["uv_index"])
     if current.get("visibility") is not None:
@@ -227,7 +231,13 @@ def fetch_open_meteo_metrics(city: dict, session: requests.Session) -> dict:
 def combine_weather_metrics(primary: dict, secondary: dict) -> dict:
     weather = {**primary}
     for key, value in secondary.items():
-        if key in {"wind_speed", "uv_index"} and weather.get(key) and value:
+        if key == "wind_speed" and value:
+            compact_value = compact_wind_speed(value)
+            if weather.get(key):
+                weather[key] = f"{compact_wind_speed(weather[key])}·{compact_value}"
+            else:
+                weather[key] = compact_value
+        elif key == "uv_index" and weather.get(key) and value:
             weather[key] = f"{weather[key]} · {value}"
         elif not weather.get(key):
             weather[key] = value

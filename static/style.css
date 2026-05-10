@@ -266,7 +266,7 @@ h3 {
 .matrix {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 28px;
+  gap: 16px 14px;
 }
 
 .matrix label {
@@ -293,7 +293,12 @@ h3 {
 }
 
 #metricWindSpeed {
-  font-size: clamp(14px, 1.45vw, 21px);
+  display: block;
+  max-width: 100%;
+  font-size: clamp(11px, 1.14vw, 18px);
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .city-row {
