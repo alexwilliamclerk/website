@@ -1,10 +1,10 @@
 :root {
-  --bg: #f4f8fb;
-  --bg2: #eaf3f8;
-  --surface: rgba(255, 255, 255, 0.92);
-  --surface-strong: #ffffff;
-  --line: #d8e4ee;
-  --line-strong: #c2d3e2;
+  --bg: #f8f5fb;
+  --bg2: #eaf7fb;
+  --surface: rgba(255, 255, 255, 0.58);
+  --surface-strong: rgba(255, 255, 255, 0.82);
+  --line: rgba(255, 255, 255, 0.7);
+  --line-strong: rgba(142, 168, 206, 0.42);
   --text: #172033;
   --sub: #657387;
   --muted: #8b98aa;
@@ -12,7 +12,11 @@
   --accent-soft: #e8f0ff;
   --fresh: #0f9f83;
   --warm: #f59e0b;
-  --shadow: 0 18px 42px rgba(31, 47, 70, 0.12);
+  --aurora-pink: rgba(255, 151, 213, 0.28);
+  --aurora-lilac: rgba(193, 166, 255, 0.22);
+  --aurora-cyan: rgba(123, 218, 232, 0.2);
+  --glass-edge: rgba(255, 255, 255, 0.86);
+  --shadow: 0 22px 54px rgba(80, 91, 120, 0.16);
 }
 
 * {
@@ -29,20 +33,49 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
   background:
-    linear-gradient(135deg, rgba(37, 99, 235, 0.09), transparent 34%),
-    linear-gradient(225deg, rgba(15, 159, 131, 0.1), transparent 38%),
+    linear-gradient(115deg, rgba(255, 173, 221, 0.18), transparent 28%, rgba(128, 213, 231, 0.16) 62%, transparent 88%),
+    linear-gradient(235deg, rgba(198, 176, 255, 0.2), transparent 36%, rgba(255, 220, 235, 0.16) 74%),
     linear-gradient(180deg, var(--bg2), var(--bg));
   color: var(--text);
   overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -18vh -14vw;
+  pointer-events: none;
+  z-index: -2;
+  filter: blur(32px);
+  opacity: 0.78;
+}
+
+body::before {
+  background:
+    linear-gradient(105deg, transparent 10%, var(--aurora-pink) 30%, var(--aurora-lilac) 48%, transparent 72%),
+    linear-gradient(16deg, transparent 16%, var(--aurora-cyan) 52%, transparent 82%);
+  animation: auroraDrift 18s ease-in-out infinite alternate;
+}
+
+body::after {
+  background:
+    linear-gradient(76deg, transparent 18%, rgba(255, 236, 249, 0.5) 36%, rgba(175, 218, 255, 0.2) 58%, transparent 82%),
+    linear-gradient(148deg, transparent 22%, rgba(255, 177, 225, 0.2) 45%, transparent 72%);
+  opacity: 0.58;
+  animation: auroraDrift 24s ease-in-out infinite alternate-reverse;
 }
 
 .bg-noise {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(23, 32, 51, 0.08) 0.6px, transparent 0.6px);
+  z-index: -1;
+  background-image:
+    linear-gradient(115deg, rgba(255,255,255,0.26), transparent 32%, rgba(255,255,255,0.12) 66%, transparent),
+    radial-gradient(rgba(23, 32, 51, 0.06) 0.6px, transparent 0.6px);
   background-size: 18px 18px;
-  opacity: 0.28;
+  opacity: 0.34;
 }
 
 .page-dots {
@@ -62,14 +95,16 @@ body {
   min-height: 10px;
   padding: 0;
   border-radius: 999px;
-  background: rgba(101, 115, 135, 0.36);
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  box-shadow: 0 8px 18px rgba(31, 47, 70, 0.15);
+  background: rgba(255, 255, 255, 0.48);
+  border: 1px solid var(--glass-edge);
+  box-shadow: 0 8px 18px rgba(80, 91, 120, 0.15);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
 }
 
 .dot.active {
   height: 30px;
-  background: var(--accent);
+  background: linear-gradient(180deg, rgba(255, 172, 222, 0.86), rgba(99, 157, 255, 0.86));
   border-color: #ffffff;
 }
 
@@ -101,18 +136,56 @@ body {
 }
 
 .glass {
-  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.34)),
+    linear-gradient(320deg, rgba(255, 173, 221, 0.16), transparent 38%, rgba(136, 211, 232, 0.13));
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(105, 135, 180, 0.12),
+    var(--shadow);
+  backdrop-filter: blur(24px) saturate(175%) contrast(104%);
+  -webkit-backdrop-filter: blur(24px) saturate(175%) contrast(104%);
   transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 
+.glass::before,
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.glass::before {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.78), transparent 28%, rgba(255, 179, 225, 0.14) 48%, transparent 70%),
+    linear-gradient(180deg, rgba(255,255,255,0.28), transparent 42%);
+  opacity: 0.66;
+}
+
+.glass::after {
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background:
+    linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.22) 18%, transparent 36%),
+    linear-gradient(270deg, rgba(255, 161, 218, 0.12), transparent 38%, rgba(105, 189, 225, 0.12));
+  opacity: 0.72;
+}
+
 .glass:hover {
-  border-color: var(--line-strong);
-  box-shadow: 0 24px 54px rgba(31, 47, 70, 0.16);
+  border-color: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -1px 0 rgba(105, 135, 180, 0.14),
+    0 28px 64px rgba(80, 91, 120, 0.18);
   transform: translateY(-2px);
 }
 
@@ -193,8 +266,9 @@ h3 {
   width: 140px;
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--fresh), var(--accent), var(--warm));
-  opacity: 0.28;
+  background: linear-gradient(90deg, rgba(15, 159, 131, 0.55), rgba(255, 154, 218, 0.7), rgba(37, 99, 235, 0.5));
+  filter: blur(0.2px);
+  opacity: 0.48;
 }
 
 .temp-big {
@@ -257,12 +331,16 @@ button {
   min-height: 38px;
   background: var(--surface-strong);
   color: var(--text);
-  border: 1px solid var(--line-strong);
+  border: 1px solid rgba(255, 255, 255, 0.76);
   border-radius: 10px;
   padding: 8px 12px;
   font: inherit;
-  box-shadow: 0 6px 16px rgba(31, 47, 70, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 6px 16px rgba(80, 91, 120, 0.1);
   outline: none;
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, background 0.18s ease;
 }
 
@@ -278,16 +356,18 @@ select {
 
 button {
   cursor: pointer;
-  background: var(--accent-soft);
-  border-color: #b9cdfa;
-  color: #1d4ed8;
+  background: linear-gradient(135deg, rgba(255, 231, 246, 0.9), rgba(229, 239, 255, 0.9));
+  border-color: rgba(255, 255, 255, 0.82);
+  color: #2450ad;
   font-weight: 700;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 button:hover:not(:disabled) {
-  background: #dbe8ff;
-  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.16);
+  background: linear-gradient(135deg, rgba(255, 215, 239, 0.94), rgba(217, 232, 255, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 10px 24px rgba(190, 109, 175, 0.16);
   transform: translateY(-1px);
 }
 
@@ -317,10 +397,17 @@ button:disabled {
   min-height: 82px;
   padding: 14px;
   border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff, #f7fbff);
-  border: 1px solid var(--line);
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.38)),
+    linear-gradient(320deg, rgba(255, 179, 225, 0.14), transparent 54%, rgba(135, 211, 232, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.72);
   color: var(--text);
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 10px 22px rgba(80, 91, 120, 0.08);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   opacity: 0;
   transform: translateY(12px);
   animation: cardIn 0.48s ease forwards;
@@ -330,14 +417,21 @@ button:disabled {
 
 .city-card:hover,
 .city-card.active {
-  background: linear-gradient(180deg, #ffffff, #eef6ff);
-  border-color: #9bbcf8;
-  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.82), rgba(255, 244, 251, 0.5)),
+    linear-gradient(320deg, rgba(255, 162, 219, 0.22), transparent 52%, rgba(123, 202, 231, 0.18));
+  border-color: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 16px 32px rgba(190, 109, 175, 0.13);
   transform: translateY(-3px);
 }
 
 .city-card.active {
-  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.28), 0 14px 28px rgba(37, 99, 235, 0.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.78),
+    inset 0 0 18px rgba(255, 171, 221, 0.18),
+    0 16px 32px rgba(190, 109, 175, 0.14);
 }
 
 .city-card div {
@@ -365,11 +459,16 @@ button:disabled {
   justify-content: space-between;
   gap: 12px;
   padding: 13px 14px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 14px;
-  background: #f8fbff;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(248, 251, 255, 0.42)),
+    linear-gradient(90deg, rgba(255, 181, 226, 0.12), transparent 44%, rgba(137, 210, 231, 0.1));
   color: #536275;
   font-variant-numeric: tabular-nums;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
   opacity: 0;
   transform: translateX(-10px);
   animation: listIn 0.42s ease forwards;
@@ -377,7 +476,7 @@ button:disabled {
 }
 
 .hist-item:last-child {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .reveal {
@@ -405,6 +504,15 @@ button:disabled {
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes auroraDrift {
+  from {
+    transform: translate3d(-2vw, -1vh, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3vw, 2vh, 0) scale(1.04);
   }
 }
 
