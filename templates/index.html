@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>广东天气中枢</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="bg-noise"></div>
+    <nav id="pageDots" class="page-dots" aria-label="页面导航">
+      <button class="dot active" type="button" aria-label="总览" data-target="overview"></button>
+      <button class="dot" type="button" aria-label="记录" data-target="historyPanel"></button>
+      <button class="dot" type="button" aria-label="城市" data-target="cityPanel"></button>
+    </nav>
+
+    <main class="container">
+      <section id="overview" class="snap-panel overview-panel">
+        <header class="topbar glass reveal" style="--delay: 0ms">
+          <div>
+            <p class="eyebrow">Guangdong Weather</p>
+            <h1>广东天气中枢</h1>
+          </div>
+          <div id="nowTime" class="mono"></div>
+        </header>
+
+        <div class="grid-two">
+          <article class="weather-main glass reveal" style="--delay: 80ms">
+            <div class="city-row">
+              <h2 id="cityName">广州</h2>
+              <select id="citySelect"></select>
+            </div>
+            <div class="temp-wrap">
+              <span id="tempHigh" class="temp-big">--</span>
+              <span class="unit">°C</span>
+            </div>
+            <p class="secondary">最高温 / 最低温：<span id="tempLow">--</span>°C</p>
+          </article>
+
+          <article class="metrics glass reveal" style="--delay: 160ms">
+            <h3>AQI & 指标（占位）</h3>
+            <div class="matrix">
+              <div><label>AQI</label><strong>--</strong></div>
+              <div><label>湿度</label><strong>--</strong></div>
+              <div><label>风速</label><strong>--</strong></div>
+              <div><label>紫外线</label><strong>--</strong></div>
+              <div><label>能见度</label><strong>--</strong></div>
+              <div><label>气压</label><strong>--</strong></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="historyPanel" class="snap-panel">
+        <article class="glass reveal panel-fill" style="--delay: 120ms">
+          <div class="section-heading">
+            <p class="eyebrow">Trend</p>
+            <h3>近 14 天温度记录</h3>
+          </div>
+          <div id="history" class="history"></div>
+        </article>
+      </section>
+
+      <section id="cityPanel" class="snap-panel">
+        <article class="glass reveal panel-fill" style="--delay: 160ms">
+          <div class="row-between">
+            <div class="section-heading">
+              <p class="eyebrow">Cities</p>
+              <h3>全广东最新温度</h3>
+            </div>
+            <button id="refreshBtn">立即爬取</button>
+          </div>
+          <div id="cityCards" class="city-cards"></div>
+        </article>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
