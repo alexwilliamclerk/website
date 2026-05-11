@@ -1,5 +1,10 @@
 const nowTime = document.getElementById('nowTime');
 const cityCards = document.getElementById('cityCards');
+const cityPicker = document.getElementById('cityPicker');
+const cityPickerTrigger = document.getElementById('cityPickerTrigger');
+const cityPickerValue = document.getElementById('cityPickerValue');
+const cityPickerList = document.getElementById('cityPickerList');
+const citySearch = document.getElementById('citySearch');
 const citySelect = document.getElementById('citySelect');
 const cityName = document.getElementById('cityName');
 const tempHigh = document.getElementById('tempHigh');
@@ -16,6 +21,7 @@ const historyPanel = document.getElementById('historyPanel');
 
 let latestByCity = new Map();
 let pointerFrame = 0;
+let cityPickerOpen = false;
 
 const motionObserver = 'IntersectionObserver' in window
   ? new IntersectionObserver((entries) => {
@@ -77,6 +83,63 @@ function easeHistoryIntoView() {
 function tick() { nowTime.textContent = new Date().toLocaleString('zh-CN', { hour12: false }); }
 setInterval(tick, 1000); tick();
 
+function setCityPickerOpen(open) {
+  cityPickerOpen = open;
+  cityPicker.classList.toggle('open', open);
+  cityPickerTrigger.setAttribute('aria-expanded', String(open));
+  if (open) {
+    citySearch.value = '';
+    renderCityPickerList();
+    window.requestAnimationFrame(() => citySearch.focus());
+  }
+}
+
+function renderCityPickerList() {
+  const query = citySearch.value.trim().toLowerCase();
+  const selectedCity = citySelect.value || cityName.textContent;
+  const records = [...latestByCity.values()].filter((record) => {
+    if (!query) return true;
+    return record.city.toLowerCase().includes(query);
+  });
+
+  cityPickerList.innerHTML = '';
+  if (!records.length) {
+    cityPickerList.innerHTML = '<div class="city-empty">没有匹配城市</div>';
+    return;
+  }
+
+  records.forEach((record) => {
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'city-option';
+    option.dataset.city = record.city;
+    option.setAttribute('role', 'option');
+    option.setAttribute('aria-selected', String(record.city === selectedCity));
+    option.innerHTML = `
+      <span>
+        <strong>${record.city}</strong>
+        <small>${record.high_temp}° / ${record.low_temp}°</small>
+      </span>
+      <span class="city-option-check" aria-hidden="true"></span>
+    `;
+    option.addEventListener('click', async () => {
+      await selectCity(record);
+      setCityPickerOpen(false);
+      cityPickerTrigger.focus();
+    });
+    cityPickerList.appendChild(option);
+  });
+}
+
+function syncCityPicker(city) {
+  if (!city) return;
+  cityPickerValue.textContent = city;
+  [...cityPickerList.children].forEach((option) => {
+    if (!option.classList?.contains('city-option')) return;
+    option.setAttribute('aria-selected', String(option.dataset.city === city));
+  });
+}
+
 async function loadLatest() {
   const res = await fetch('/api/weather/latest');
   const data = await res.json();
@@ -95,6 +158,7 @@ async function loadLatest() {
     cityCards.appendChild(card);
     if (i === 0) updateMain(d);
   });
+  renderCityPickerList();
   syncSelectedCard(citySelect.value);
   observeMotionElements(cityCards);
 }
@@ -161,6 +225,7 @@ async function selectCity(record, shouldScroll = false) {
 }
 
 function syncSelectedCard(city) {
+  syncCityPicker(city);
   [...cityCards.children].forEach(card => {
     card.classList.toggle('active', card.dataset.city === city);
   });
@@ -173,6 +238,31 @@ citySelect.addEventListener('change', async (e) => {
     updateMain(record);
   }
   await loadCityHistory(city);
+});
+
+cityPickerTrigger.addEventListener('click', () => {
+  setCityPickerOpen(!cityPickerOpen);
+});
+
+cityPickerTrigger.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    setCityPickerOpen(true);
+  }
+});
+
+citySearch.addEventListener('input', renderCityPickerList);
+
+cityPicker.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    setCityPickerOpen(false);
+    cityPickerTrigger.focus();
+  }
+});
+
+document.addEventListener('pointerdown', (event) => {
+  if (!cityPickerOpen || cityPicker.contains(event.target)) return;
+  setCityPickerOpen(false);
 });
 
 refreshBtn.addEventListener('click', async () => {

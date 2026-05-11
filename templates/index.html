@@ -23,7 +23,24 @@
           <article class="weather-main glass reveal" style="--delay: 80ms">
             <div class="city-row">
               <h2 id="cityName">广州</h2>
-              <select id="citySelect"></select>
+              <div id="cityPicker" class="city-picker">
+                <select id="citySelect" class="native-city-select" aria-hidden="true" tabindex="-1"></select>
+                <button
+                  id="cityPickerTrigger"
+                  class="city-picker-trigger"
+                  type="button"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                  aria-controls="cityPickerList"
+                >
+                  <span id="cityPickerValue">广州</span>
+                  <span class="city-picker-icon" aria-hidden="true"></span>
+                </button>
+                <div id="cityPickerPanel" class="city-picker-panel">
+                  <input id="citySearch" class="city-search" type="search" placeholder="搜索城市" autocomplete="off" />
+                  <div id="cityPickerList" class="city-picker-list" role="listbox" aria-label="城市"></div>
+                </div>
+              </div>
             </div>
             <div class="temp-wrap">
               <span id="tempHigh" class="temp-big">--</span>

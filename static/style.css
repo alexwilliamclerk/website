@@ -225,7 +225,8 @@ h3 {
 .weather-main {
   min-height: 250px;
   position: relative;
-  overflow: hidden;
+  z-index: 4;
+  overflow: visible;
 }
 
 .weather-main::after {
@@ -308,6 +309,20 @@ h3 {
   gap: 18px;
 }
 
+.city-picker {
+  position: relative;
+  z-index: 30;
+  width: 186px;
+}
+
+.native-city-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 select,
 button {
   min-height: 38px;
@@ -336,6 +351,183 @@ select {
   min-width: 132px;
 }
 
+.city-picker-trigger {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 16px;
+  padding: 10px 14px 10px 16px;
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(246, 251, 255, 0.64)),
+    linear-gradient(320deg, rgba(255, 177, 225, 0.18), transparent 54%, rgba(137, 210, 231, 0.14));
+  border-color: rgba(255, 255, 255, 0.92);
+  color: #142033;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 12px 28px rgba(80, 91, 120, 0.13);
+}
+
+#cityPickerValue {
+  flex: 1;
+  text-align: left;
+}
+
+.city-picker-trigger:hover,
+.city-picker.open .city-picker-trigger {
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(255, 246, 252, 0.72)),
+    linear-gradient(320deg, rgba(255, 156, 218, 0.22), transparent 52%, rgba(116, 201, 232, 0.2));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 16px 34px rgba(166, 108, 178, 0.17);
+}
+
+.city-picker-icon {
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.city-picker.open .city-picker-icon {
+  transform: translateY(3px) rotate(225deg);
+}
+
+.city-picker-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 100;
+  width: min(264px, calc(100vw - 48px));
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(247, 251, 255, 0.76)),
+    linear-gradient(315deg, rgba(255, 173, 221, 0.2), transparent 48%, rgba(137, 210, 231, 0.18));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 26px 62px rgba(80, 91, 120, 0.2);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px) scale(0.98);
+  transform-origin: 100% 0;
+  transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.city-picker.open .city-picker-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.city-search {
+  width: 100%;
+  min-height: 38px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 14px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.city-search:focus {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.city-picker-list {
+  display: grid;
+  max-height: 286px;
+  gap: 6px;
+  overflow: auto;
+  padding: 2px;
+  overscroll-behavior: contain;
+}
+
+.city-picker-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.city-picker-list::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(115, 133, 160, 0.34);
+  background-clip: padding-box;
+}
+
+.city-option {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  box-shadow: none;
+  text-align: left;
+  font-weight: 600;
+}
+
+.city-option:hover,
+.city-option:focus-visible,
+.city-option[aria-selected="true"] {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 244, 251, 0.54)),
+    linear-gradient(315deg, rgba(255, 159, 218, 0.16), transparent 56%, rgba(112, 200, 232, 0.14));
+  border-color: rgba(255, 255, 255, 0.86);
+  transform: translateX(2px);
+}
+
+.city-option strong,
+.city-option small {
+  display: block;
+}
+
+.city-option small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.city-option-check {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(117, 133, 160, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(117, 133, 160, 0.18);
+}
+
+.city-option[aria-selected="true"] .city-option-check {
+  background: linear-gradient(135deg, rgba(255, 133, 209, 0.95), rgba(69, 138, 255, 0.9));
+  box-shadow: 0 0 0 4px rgba(255, 162, 219, 0.16);
+}
+
+.city-empty {
+  padding: 14px 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
 button {
   cursor: pointer;
   background: linear-gradient(135deg, rgba(255, 231, 246, 0.9), rgba(229, 239, 255, 0.9));
@@ -357,6 +549,33 @@ button:disabled {
   cursor: wait;
   color: var(--muted);
   background: #edf2f7;
+}
+
+button.city-picker-trigger:hover:not(:disabled),
+.city-picker.open .city-picker-trigger {
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(255, 246, 252, 0.72)),
+    linear-gradient(320deg, rgba(255, 156, 218, 0.22), transparent 52%, rgba(116, 201, 232, 0.2));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 16px 34px rgba(166, 108, 178, 0.17);
+}
+
+button.city-option,
+button.city-option:hover:not(:disabled),
+button.city-option:focus-visible,
+button.city-option[aria-selected="true"] {
+  color: var(--text);
+  box-shadow: none;
+}
+
+button.city-option:hover:not(:disabled),
+button.city-option:focus-visible,
+button.city-option[aria-selected="true"] {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 244, 251, 0.54)),
+    linear-gradient(315deg, rgba(255, 159, 218, 0.16), transparent 56%, rgba(112, 200, 232, 0.14));
+  transform: translateX(2px);
 }
 
 .row-between {
@@ -524,6 +743,16 @@ button:disabled {
   }
 
   select {
+    width: 100%;
+  }
+
+  .city-picker {
+    width: 100%;
+  }
+
+  .city-picker-panel {
+    left: 0;
+    right: auto;
     width: 100%;
   }
 
